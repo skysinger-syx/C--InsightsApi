@@ -9,6 +9,8 @@ using System.Reflection.Metadata;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.Configure<InsightsOptions>(builder.Configuration.GetSection("Insights"));
+
 builder.Services.AddSingleton<ITransactionRepository, InMemoryTransactionRepository>();
 builder.Services.AddSingleton<IClock, SystemClock>();
 builder.Services.AddSingleton<TransactionQueryService>();
