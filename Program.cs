@@ -14,6 +14,7 @@ builder.Services.Configure<InsightsOptions>(builder.Configuration.GetSection("In
 builder.Services.AddSingleton<ITransactionRepository, InMemoryTransactionRepository>();
 builder.Services.AddSingleton<IClock, SystemClock>();
 builder.Services.AddSingleton<TransactionQueryService>();
+builder.Services.AddSingleton<InsightsService>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -40,6 +41,21 @@ app.MapGet("/1-page-transactions", async (
     return Results.Ok(result);
 }
 );
+
+app.MapGet("/insights/summary", async (
+    int days,
+    InsightsService svc,
+    ILogger<Program> log,
+    CancellationToken ct) =>
+{
+    days = days <= 0 ? 7 : days;
+    log.LogInformation("Insights summary requested. days={Days}", days);
+    var summary = await svc.SummaryAsync(days, ct);
+    return Results.Ok(summary);
+}
+);
+
+
 
 app.MapPost("/seed", async (
     int? count,
